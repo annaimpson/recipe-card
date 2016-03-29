@@ -1,10 +1,28 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var $ = require('jquery');
+var LinkedStateMixin = require('react/lib/LinkedStateMixin');
+var Input = require('react-bootstrap/lib/Input');
+var ButtonInput = require('react-bootstrap/lib/ButtonInput');
+var Parse = require('parse');
+var ParseReact = require('parse-react');
 var Backbone = require('backbone');
+var models = require('../models');
 require('backbone-react-component');
 
+
+Parse.initialize('bakers-app');
+Parse.serverURL = 'http://annaimpson.herokuapp.com/';
+
+
 var Recipe = React.createClass({
+  mixins: [ParseReact.Mixin],
+
+  observe: function() {
+    return {
+      recipes: (new Parse.Query('Recipe')).descending('createAt')
+    };
+  },
   render: function(){
     return(
       <div>
@@ -39,7 +57,13 @@ var Recipe = React.createClass({
         <div className="recipe">
           <div className="row">
             <div className="col-md-12">
-              <div className="recipe-box"></div>
+
+              <ul className="recipe-box">
+                {this.data.recipes.map(function(recipe) {
+                  return <li key={recipe.id}>{recipe.title}:: {recipe.notes}</li>;
+                })}
+
+              </ul>
             </div>
           </div>
         </div>

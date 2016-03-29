@@ -1,7 +1,12 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var LinkedStateMixin = require('react/lib/LinkedStateMixin');
+var Input = require('react-bootstrap/lib/Input');
+var ButtonInput = require('react-bootstrap/lib/ButtonInput');
+var Parse = require('parse');
 var $ = require('jquery');
 var Backbone = require('backbone');
+var models = require('../models');
 require('backbone-react-component');
 
 
@@ -24,12 +29,65 @@ var recipeHeader = React.createClass({
 })
 
 var makeRecipe = React.createClass({
-  handleSubmit: function(){
-    console.log('handleSubmit');
-    Backbone.history.navigate('recipe', {trigger: true});
+  mixins: [LinkedStateMixin],
+  getInitialState: function(){
+    return {title: '', notes: '', ingredientCount:''};
   },
 
+  handleSubmit: function(e){
+    e.preventDefault();
+    var self = this;
+    var router = this.props.router;
+    var recipe = new models.Recipe();
+    recipe.set({
+      "title": this.state.title,
+      "notes": this.state.notes
+    });
+    Backbone.history.navigate('recipe', {trigger: true});
+
+    recipe.save(null, {
+      success: function(recipe) {
+        var recipeIngredients = [];
+
+        for(var i=1; i <= self.state.ingredientCount; i++){
+          console.log("formset: ", i, self.refs["formset" +i]);
+
+          var quantity = self.refs["formset" +i].refs["quantity"+i].getInputDOMNode().value;
+          var units = self.refs["formset" +i].refs["units"+i].getInputDOMNode().value;
+          var name = self.refs["formset" +i].refs["name"+i].getInputDOMNode().value;
+
+          var ingredient = new models.Ingredient();
+          ingredient.set('quantity', parseInt(qty));
+          ingredient.set('units', units);
+          ingredient.set('name', name);
+          ingredient.set('recipe', recipe);
+
+          recipeIngredients.push(ingredient);
+        }
+
+        console.log(recipeIngredients);
+
+        Parse.Object.saveAll(recipeIngredients, {
+          success: function(list) {
+            alert('ing saved!');
+          },
+          error: function(error) {
+            console.log(error);
+          }
+        });
+        router.navigate('recipes/', {trigger: true});
+      },
+      error: function(recipe, error) {
+        alert('Failed to create new object with error code: ' + error.message);
+      }
+    });
+  },
   render: function(){
+    var ingredientForms = [];
+    for (var i=1; i<= this.state.ingredientCount; i++){
+      var count = i;
+      ingredientForms.push(<IngredientFormset key={count} count={count} ref={"formset"+count}/>);
+    }
     return(
       <div className="recipe-input-page">
         <div className="first-row">
@@ -135,6 +193,7 @@ var makeRecipe = React.createClass({
           </div>
         </div>
 
+        {ingredientForms}
 
         <div className="col-md-12">
           <h6 className="notes">Personal Notes</h6>

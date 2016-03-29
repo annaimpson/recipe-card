@@ -2,12 +2,14 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var $ = require('jquery');
 var Backbone = require('backbone');
+var Parse = require('parse');
 
 
 var Login = require('./AdjustRecipe/login.jsx');
-var recipeHeader = require('./AdjustRecipe/recipeInput.jsx').recipeHeader;
 var recipeInput = require('./AdjustRecipe/recipeInput.jsx').makeRecipe;
 var Recipe = require('./AdjustRecipe/recipe.jsx');
+
+var appContainer = document.getElementById('app');
 
 var LoginRouter = Backbone.Router.extend({
   routes: {
@@ -17,28 +19,28 @@ var LoginRouter = Backbone.Router.extend({
     'recipeHeader': 'recipeHeader'
   },
   login: function(){
+    ReactDOM.unmountComponentAtNode(appContainer);
+
     ReactDOM.render(
       React.createElement(Login), document.getElementById('app')
     );
   },
 
   recipe: function(){
+    ReactDOM.unmountComponentAtNode(appContainer);
+
     ReactDOM.render(
       React.createElement(Recipe), document.getElementById('app')
     );
   },
 
-  recipeHeader: function(){
-    ReactDOM.render(
-      React.createElement(recipeHeader), document.getElementById('header')
-    );
-  },
   recipeInput: function(){
+    ReactDOM.unmountComponentAtNode(appContainer);
+
     ReactDOM.render(
       React.createElement(recipeInput), document.getElementById('app')
     );
   }
-
 });
 
 module.exports = LoginRouter;

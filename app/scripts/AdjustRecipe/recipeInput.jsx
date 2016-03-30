@@ -63,6 +63,7 @@ var makeRecipe = React.createClass({
           ingredient.set('recipe', recipe);
 
           recipeIngredients.push(ingredient);
+          console.log(recipeIngredients);
         }
 
         console.log(recipeIngredients);

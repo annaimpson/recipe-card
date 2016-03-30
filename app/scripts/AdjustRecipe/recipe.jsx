@@ -8,7 +8,9 @@ var Parse = require('parse');
 var ParseReact = require('parse-react');
 var Backbone = require('backbone');
 var models = require('../models');
+var recipe = require('./recipeInput.jsx');
 require('backbone-react-component');
+console.log(recipe);
 
 
 Parse.initialize('bakers-app');
@@ -60,7 +62,7 @@ var Recipe = React.createClass({
 
               <ul className="recipe-box">
                 {this.data.recipes.map(function(recipe) {
-                  return <li key={recipe.id}>{recipe.title}:: {recipe.notes}</li>;
+                  return <li key={recipe.id}>{recipe.name} :: {recipe.ingredient}</li>;
                 })}
 
               </ul>
